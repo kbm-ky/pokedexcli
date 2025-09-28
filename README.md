@@ -1,3 +1,3 @@
 # Pokedex CLI
 
-A [Boot.Dev](projecthttps://www.boot.dev/courses/build-pokedex-cli-golang) project. 
+A [Boot.Dev](https://www.boot.dev/courses/build-pokedex-cli-golang) project. 
