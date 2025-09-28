@@ -52,6 +52,11 @@ func init() {
 			"Explores the given location name",
 			commandExplore,
 		},
+		"catch": {
+			"catch",
+			"Attempts to catch the Pokemon given its name",
+			commandCatch,
+		},
 	}
 }
 
@@ -174,6 +179,21 @@ func commandExplore(config *cmdConfig, args []string) error {
 	for _, encounter := range area.PokemonEncounters {
 		fmt.Printf(" - %v\n", encounter.Pokemon.Name)
 	}
+	return nil
+}
+
+func commandCatch(config *cmdConfig, args []string) error {
+	if len(args) == 0 {
+		fmt.Printf("Catch expects an argument, not given\n")
+		return nil
+	}
+
+	target := args[0]
+	fmt.Printf("Throwing a Pokeball at %s...\n", target)
+	fmt.Printf("TODO: Call Pokemon endpoint.\n")
+	fmt.Printf("TODO: Do dice roll to catch or miss target.\n")
+	fmt.Printf("TODO: Add to a pokedex if caught.\n")
+
 	return nil
 }
 
