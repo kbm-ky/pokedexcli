@@ -63,6 +63,11 @@ func init() {
 			"Inspects the details of a caught Pokemon",
 			commandInspect,
 		},
+		"pokedex": {
+			"pokedex",
+			"Prints a list of Pokemon names in your Pokedex",
+			commandPokedex,
+		},
 	}
 }
 
@@ -178,7 +183,8 @@ func commandExplore(config *cmdConfig, args []string) error {
 	fmt.Printf("Exploring %s...\n", location)
 	area, err := pokeapi.GetLocationArea(location)
 	if err != nil {
-		return err
+		fmt.Printf("error: %v\n", err)
+		return nil
 	}
 
 	for _, encounter := range area.PokemonEncounters {
@@ -197,7 +203,8 @@ func commandCatch(config *cmdConfig, args []string) error {
 	fmt.Printf("Throwing a Pokeball at %s...\n", target)
 	pokemon, err := pokeapi.GetPokemon(target)
 	if err != nil {
-		return err
+		fmt.Printf("error: %v\n", err)
+		return nil
 	}
 
 	user_exp, target_exp := 100, pokemon.BaseExperience
@@ -238,6 +245,20 @@ func commandInspect(config *cmdConfig, args []string) error {
 	for i := range pokemon.Types {
 		typ := pokemon.Types[i]
 		fmt.Printf("  - %s\n", typ.Type.Name)
+	}
+
+	return nil
+}
+
+func commandPokedex(config *cmdConfig, args []string) error {
+	if len(pokedex) == 0 {
+		fmt.Printf("Your Pokedex is empty, go catch some!\n")
+		return nil
+	}
+
+	fmt.Printf("Your Pokedex:\n")
+	for _, k := range slices.Sorted(maps.Keys(pokedex)) {
+		fmt.Printf(" - %s\n", k)
 	}
 
 	return nil
