@@ -58,6 +58,11 @@ func init() {
 			"Attempts to catch the Pokemon given its name",
 			commandCatch,
 		},
+		"inspect": {
+			"inspect",
+			"Inspects the details of a caught Pokemon",
+			commandInspect,
+		},
 	}
 }
 
@@ -202,6 +207,37 @@ func commandCatch(config *cmdConfig, args []string) error {
 		pokedex[target] = pokemon
 	} else {
 		fmt.Printf("%s escaped!\n", target)
+	}
+
+	return nil
+}
+
+func commandInspect(config *cmdConfig, args []string) error {
+	if len(args) == 0 {
+		fmt.Printf("Inspect expects an argument, none given")
+		return nil
+	}
+
+	name := args[0]
+	pokemon, ok := pokedex[name]
+	if !ok {
+		fmt.Printf("you have not caught that pokemon\n")
+		return nil
+	}
+
+	fmt.Printf("%v\n", pokemon)
+	fmt.Printf("Name: %s\n", name)
+	fmt.Printf("Height: %d\n", pokemon.Height)
+	fmt.Printf("Weight: %d\n", pokemon.Weight)
+	fmt.Printf("Stats:\n")
+	for i := range pokemon.Stats {
+		stat := pokemon.Stats[i]
+		fmt.Printf("  -%s: %d\n", stat.Stat.Name, stat.BaseStat)
+	}
+	fmt.Printf("Types:\n")
+	for i := range pokemon.Types {
+		typ := pokemon.Types[i]
+		fmt.Printf("  - %s\n", typ.Type.Name)
 	}
 
 	return nil
