@@ -10,6 +10,8 @@ import (
 	"github.com/kbm-ky/pokedexcli/internal/pokecache"
 )
 
+const LocationAreaEndpoint = "https://pokeapi.co/api/v2/location-area/"
+
 var cache *pokecache.Cache
 
 func init() {
@@ -39,7 +41,7 @@ func Get(url string) ([]byte, error) {
 	return data, nil
 }
 
-func GetLocationArea(url string) (NamedAPIResourceList[LocationArea], error) {
+func GetLocationAreaList(url string) (NamedAPIResourceList[LocationArea], error) {
 	var list NamedAPIResourceList[LocationArea]
 
 	data, err := Get(url)
@@ -53,4 +55,21 @@ func GetLocationArea(url string) (NamedAPIResourceList[LocationArea], error) {
 	}
 
 	return list, nil
+}
+
+func GetLocationArea(name string) (LocationArea, error) {
+	requestUrl := LocationAreaEndpoint + name
+
+	data, err := Get(requestUrl)
+	if err != nil {
+		return LocationArea{}, err
+	}
+
+	var locationArea LocationArea
+	err = json.Unmarshal(data, &locationArea)
+	if err != nil {
+		return LocationArea{}, err
+	}
+
+	return locationArea, nil
 }

@@ -17,11 +17,21 @@ type Location struct {
 }
 
 type LocationArea struct {
-	Id                   int      `json:"id"`
-	Name                 string   `json:"name"`
-	GameIndex            int      `json:"game_index"`
-	EncounterMethodRates []any    `json:"encounter_method_rates"`
-	Location             Location `json:"location"`
-	Names                []any    `json:"names"`
-	PokemonEncounters    []any    `json:"pokemon_encounters"`
+	Id                   int                `json:"id"`
+	Name                 string             `json:"name"`
+	GameIndex            int                `json:"game_index"`
+	EncounterMethodRates []any              `json:"encounter_method_rates"`
+	Location             Location           `json:"location"`
+	Names                []any              `json:"names"`
+	PokemonEncounters    []PokemonEncounter `json:"pokemon_encounters"`
+}
+
+type PokemonEncounter struct {
+	Pokemon        Pokemon `json:"pokemon"`
+	VersionDetails []any   `json:"version_details"`
+}
+
+type Pokemon struct {
+	Id   int    `json:"id"`
+	Name string `json:"name"`
 }

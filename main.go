@@ -58,7 +58,8 @@ func init() {
 func main() {
 
 	cmdConfig := cmdConfig{
-		Next: "https://pokeapi.co/api/v2/location-area/",
+		// Next: "https://pokeapi.co/api/v2/location-area/",
+		Next: pokeapi.LocationAreaEndpoint,
 	}
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
@@ -121,7 +122,7 @@ func commandMap(config *cmdConfig, _ []string) error {
 		return nil
 	}
 
-	list, err := pokeapi.GetLocationArea(config.Next)
+	list, err := pokeapi.GetLocationAreaList(config.Next)
 	if err != nil {
 		return nil
 	}
@@ -142,7 +143,7 @@ func commandMapBack(config *cmdConfig, _ []string) error {
 		return nil
 	}
 
-	list, err := pokeapi.GetLocationArea(config.Previous)
+	list, err := pokeapi.GetLocationAreaList(config.Previous)
 	if err != nil {
 		return nil
 	}
@@ -164,8 +165,15 @@ func commandExplore(config *cmdConfig, args []string) error {
 	}
 
 	location := args[0]
+	fmt.Printf("Exploring %s...\n", location)
+	area, err := pokeapi.GetLocationArea(location)
+	if err != nil {
+		return err
+	}
 
-	fmt.Printf("TODO: explore %s\n", location)
+	for _, encounter := range area.PokemonEncounters {
+		fmt.Printf(" - %v\n", encounter.Pokemon.Name)
+	}
 	return nil
 }
 
