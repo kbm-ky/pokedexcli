@@ -23,6 +23,7 @@ type cmdConfig struct {
 }
 
 var commands map[string]cliCommand
+var pokedex = map[string]pokeapi.Pokemon{}
 
 func init() {
 	commands = map[string]cliCommand{
@@ -63,7 +64,6 @@ func init() {
 func main() {
 
 	cmdConfig := cmdConfig{
-		// Next: "https://pokeapi.co/api/v2/location-area/",
 		Next: pokeapi.LocationAreaEndpoint,
 	}
 	scanner := bufio.NewScanner(os.Stdin)
@@ -190,9 +190,19 @@ func commandCatch(config *cmdConfig, args []string) error {
 
 	target := args[0]
 	fmt.Printf("Throwing a Pokeball at %s...\n", target)
-	fmt.Printf("TODO: Call Pokemon endpoint.\n")
-	fmt.Printf("TODO: Do dice roll to catch or miss target.\n")
-	fmt.Printf("TODO: Add to a pokedex if caught.\n")
+	pokemon, err := pokeapi.GetPokemon(target)
+	if err != nil {
+		return err
+	}
+
+	user_exp, target_exp := 100, pokemon.BaseExperience
+	caught := attemptCatch(user_exp, target_exp)
+	if caught {
+		fmt.Printf("%s was caught!\n", target)
+		pokedex[target] = pokemon
+	} else {
+		fmt.Printf("%s escaped!\n", target)
+	}
 
 	return nil
 }

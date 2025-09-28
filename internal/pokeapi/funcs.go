@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/kbm-ky/pokedexcli/internal/pokecache"
 )
 
 const LocationAreaEndpoint = "https://pokeapi.co/api/v2/location-area/"
+const PokemonEndpoint = "https://pokeapi.co/api/v2/pokemon/"
 
 var cache *pokecache.Cache
 
@@ -72,4 +74,24 @@ func GetLocationArea(name string) (LocationArea, error) {
 	}
 
 	return locationArea, nil
+}
+
+func GetPokemon(name string) (Pokemon, error) {
+	requestUrl, err := url.JoinPath(PokemonEndpoint, name)
+	if err != nil {
+		return Pokemon{}, err
+	}
+
+	data, err := Get(requestUrl)
+	if err != nil {
+		return Pokemon{}, err
+	}
+
+	var pokemon Pokemon
+	err = json.Unmarshal(data, &pokemon)
+	if err != nil {
+		return Pokemon{}, err
+	}
+
+	return pokemon, nil
 }
