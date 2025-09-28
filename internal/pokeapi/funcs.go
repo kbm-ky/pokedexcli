@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"time"
 
@@ -17,33 +16,38 @@ func init() {
 	cache = pokecache.NewCache(5 * time.Second)
 }
 
-func GetLocationArea(url string) (NamedAPIResourceList[LocationArea], error) {
-	var list NamedAPIResourceList[LocationArea]
-
+func Get(url string) ([]byte, error) {
 	data, ok := cache.Get(url)
 	if !ok {
-		log.Printf("NOT using cache\n")
 		res, err := http.Get(url)
 		if err != nil {
-			return list, err
+			return nil, err
 		}
 		defer res.Body.Close()
 
 		if res.StatusCode > 299 {
-			return list, fmt.Errorf("bad response code: %d", res.StatusCode)
+			return nil, fmt.Errorf("bad response code: %d", res.StatusCode)
 		}
 
 		data, err = io.ReadAll(res.Body)
 		if err != nil {
-			return list, err
+			return nil, err
 		}
 
 		cache.Add(url, data)
-	} else {
-		// log.Printf("Using cache\n")
+	}
+	return data, nil
+}
+
+func GetLocationArea(url string) (NamedAPIResourceList[LocationArea], error) {
+	var list NamedAPIResourceList[LocationArea]
+
+	data, err := Get(url)
+	if err != nil {
+		return NamedAPIResourceList[LocationArea]{}, err
 	}
 
-	err := json.Unmarshal(data, &list)
+	err = json.Unmarshal(data, &list)
 	if err != nil {
 		return NamedAPIResourceList[LocationArea]{}, err
 	}
