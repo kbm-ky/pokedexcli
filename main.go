@@ -14,7 +14,7 @@ import (
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(config *cmdConfig) error
+	callback    func(config *cmdConfig, args []string) error
 }
 
 type cmdConfig struct {
@@ -47,6 +47,11 @@ func init() {
 			"Displays the previous 20 locations in the Pokemon world",
 			commandMapBack,
 		},
+		"explore": {
+			"explore",
+			"Explores the given location name",
+			commandExplore,
+		},
 	}
 }
 
@@ -76,7 +81,7 @@ func main() {
 			if !ok {
 				fmt.Printf("Unknown command\n")
 			} else {
-				err := cmdStruct.callback(&cmdConfig)
+				err := cmdStruct.callback(&cmdConfig, cleaned[1:])
 				if err != nil {
 					fmt.Printf("error: %v\n", err)
 					os.Exit(1)
@@ -86,22 +91,31 @@ func main() {
 	}
 }
 
-func commandExit(_ *cmdConfig) error {
+func commandExit(_ *cmdConfig, _ []string) error {
 	fmt.Printf("Closing the Pokedex... Goodbye!\n")
 	os.Exit(0)
 	return nil
 }
 
-func commandHelp(_ *cmdConfig) error {
+func commandHelp(_ *cmdConfig, _ []string) error {
 	fmt.Println("Welcome to the Pokedex!")
 	fmt.Printf("Usage:\n\n")
+
+	maxNameLen := 0
+	for k := range commands {
+		nameLen := len(k)
+		if nameLen > maxNameLen {
+			maxNameLen = nameLen
+		}
+	}
+	format := "%-*s %s\n"
 	for _, k := range slices.Sorted(maps.Keys(commands)) {
-		fmt.Printf("%s: %s\n", k, commands[k].description)
+		fmt.Printf(format, maxNameLen, k, commands[k].description)
 	}
 	return nil
 }
 
-func commandMap(config *cmdConfig) error {
+func commandMap(config *cmdConfig, _ []string) error {
 	if config.Next == "" {
 		fmt.Printf("You are at the end of the list.\n")
 		return nil
@@ -122,7 +136,7 @@ func commandMap(config *cmdConfig) error {
 	return nil
 }
 
-func commandMapBack(config *cmdConfig) error {
+func commandMapBack(config *cmdConfig, _ []string) error {
 	if config.Previous == "" {
 		fmt.Printf("You are on the first page.\n")
 		return nil
@@ -140,6 +154,18 @@ func commandMapBack(config *cmdConfig) error {
 	config.Next = list.Next
 	config.Previous = list.Previous
 
+	return nil
+}
+
+func commandExplore(config *cmdConfig, args []string) error {
+	if len(args) == 0 {
+		fmt.Printf("Explore expects an argument, not given\n")
+		return nil
+	}
+
+	location := args[0]
+
+	fmt.Printf("TODO: explore %s\n", location)
 	return nil
 }
 
